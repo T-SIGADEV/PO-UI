@@ -9,7 +9,7 @@ export class MonitorService {
 
   public getServers(): Observable<any> {
     return this.http.get(
-      "http://localapiserver:3001/rest/api/monitor/v1/allservers"
+      "http://<SEUIPREST>:<SUAPORTAPREST>/rest/api/monitor/v1/allservers"
     );
   }
 }
