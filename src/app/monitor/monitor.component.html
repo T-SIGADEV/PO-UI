@@ -1,0 +1,10 @@
+<div *ngIf="showLoading">
+  Carregando os dados...
+</div>
+<po-table
+  *ngIf="showTable"
+  [p-columns]="getColumns()"
+  [p-items]="servers"
+  p-sort="true"
+  [p-striped]="true"
+></po-table>

@@ -1,0 +1,48 @@
+<div *ngIf="showLoading">
+  Carregando os dados...
+</div>
+<div *ngIf="showTable">
+  <po-widget
+    *ngFor="let server of servers"
+    class="po-lg-3 po-mt-2"
+    p-height="325"
+    p-primary="{{ server.inactive }}"
+    p-no-shadow="true"
+    p-title="{{ server.environment }}"
+  >
+    <div *ngIf="server.inactive == 'false'">
+      <div class="po-text-center">
+        <h3>{{ server.ip }}:{{ server.port }}</h3>
+      </div>
+      <br />
+      <div class="po-text-center">
+        <h2>{{ server.memory }}%</h2>
+        <h4>Memória</h4>
+      </div>
+      <br />
+
+      <div class="po-text-center">
+        <h2>{{ server.processor }}</h2>
+        <h4>Processadores</h4>
+      </div>
+      <br />
+      <div class="po-text-center" *ngIf="server.numberOfUsers === 1">
+        <h2>{{ server.numberOfUsers }}</h2>
+        <h4>Usuário conectado</h4>
+      </div>
+      <div class="po-text-center" *ngIf="server.numberOfUsers > 1">
+        <h2>{{ server.numberOfUsers }}</h2>
+        <h4>Usuários conectados</h4>
+      </div>
+    </div>
+    <div *ngIf="server.inactive == 'true'">
+      <div class="po-text-center">
+        <h3>{{ server.ip }}:{{ server.port }}</h3>
+      </div>
+      <br />
+      <div class="po-text-center">
+        <h1>Offline</h1>
+      </div>
+    </div>
+  </po-widget>
+</div>
