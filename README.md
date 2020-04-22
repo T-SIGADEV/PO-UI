@@ -25,7 +25,7 @@
     Baixe o projeto, faça um download ou um git clone.
     Navegue através do seu VSCODE, crie uma pasta onde deseja rodar o projeto.
     Execute o comando abaixo.
-    git clone https://github.com/jotamauro/monitorProtheus.git
+    git clone https://github.com/jotamauro/monitorprotheus.git
 
     Ainda no raiz do projeto, rode o comando abaixo.
     npm install
@@ -39,7 +39,8 @@
 
     Mais pra frente iremos melhorar isso, por enquanto, para não confundir, deixaremos mais fácil o entendimento.
 
-    Se o seu REST estiver funcionando e o fonte compilado, é possível realizar um teste através do PostMan ou insomnia (o que eu uso local). Realize um GET no seu REST, passando o endereço acima.
+    Se o seu REST estiver funcionando e o fonte compilado, é possível realizar um teste através do 
+    PostMan ou insomnia (o que eu uso local). Realize um GET no seu REST, passando o endereço acima.
 
 # Executando
 
