@@ -25,7 +25,7 @@
     Baixe o projeto, faça um download ou um git clone.
     Navegue através do seu VSCODE, crie uma pasta onde deseja rodar o projeto.
     Execute o comando abaixo.
-    git clone https://github.com/jotamauro/monitorprotheus.git
+    git clone https://github.com/T-SIGADEV/PO-UI.git
 
     Ainda no raiz do projeto, rode o comando abaixo.
     npm install
