@@ -23,7 +23,7 @@ END WSRESTFUL
 /*/{Protheus.doc} Metodo GET
 Retorna todos os servidores cadastrados.
 
-@author José Mauro Dourado Lopes
+@author JosÃ© Mauro Dourado Lopes
 @since 18/04/2020
 @version 1.0
 /*/
@@ -134,7 +134,7 @@ Return nProcessa
 /*/{Protheus.doc} RETSERVERS
     (long_description)
     @type  Function
-    @author José Mauro Dourado Lopes
+    @author JosÃ© Mauro Dourado Lopes
     @since 18/04/2020
     @version version
     @param 
@@ -146,11 +146,7 @@ User Function RETSERVERS()
     Local cSelect   as character
     Local cFrom     as character
     Local cWhere    as character
-    Local aRetSql   as array
-    Local aRetWhe   as array
-
-    aRetSql := {}
-    aRetWhe := {}
+  
 
     cFrom  := RetSqlName( "ZZZ" ) + " ZZZ "
     cAlias := GetNextAlias()
