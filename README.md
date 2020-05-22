@@ -1,3 +1,26 @@
+# Versão 2
+
+    Esta versão possibilita criar e remover um novo servidor do monitoramento.
+
+    Os itens 2 e 3 foram criados apenas para demonstrar a passagem de parâmetro pro backend.
+
+    1 - Compile os arquivos da pasta ADVPL.
+    2 - Verifique o arquivo \src\app\services\servers.service.ts
+        Nele, troque o endereço do REST para apontar pro seu.
+    3 - Nos arquivos abaixo troque "ZZZ" pelo nome da tabela que você criou em seu ambiente.
+            portinari\Monitor\src\app\monitor\monitor.component.ts
+            portinari\Monitor\src\app\server-details\server-details.component.ts
+            portinari\Monitor\src\app\servers-management\servers-management.component.ts
+    4 - Rodando via protheus.
+        Dentro do seu projeto, execute o comando ng build --prod
+        Será gerado em portinari\Monitor\dist uma pasta com o nome Monitor.
+        Faça o zip dessa pasta utilizando. Apenas extensão ZIP.
+        Renomei o arquivo, removendo a extenção ZIP para APP.
+        Joguei no seu diretório e compile o arquivo em seu RPO.
+        Crie um menu com uma user function com o nome Monitor.
+        Verifique o parâmetro MV_GCTPURL, ele deve conter o endereço do seu HTTP.
+        https://tdn.totvs.com/display/public/PROT/FwCallApp+-+Abrindo+aplicativos+Web+no+Protheus
+
 # Sobre
 
     Versão 1.0 da aplicação de monitoramento de appserver do sistema Protheus.
@@ -39,7 +62,7 @@
 
     Mais pra frente iremos melhorar isso, por enquanto, para não confundir, deixaremos mais fácil o entendimento.
 
-    Se o seu REST estiver funcionando e o fonte compilado, é possível realizar um teste através do 
+    Se o seu REST estiver funcionando e o fonte compilado, é possível realizar um teste através do
     PostMan ou insomnia (o que eu uso local). Realize um GET no seu REST, passando o endereço acima.
 
 # Executando
