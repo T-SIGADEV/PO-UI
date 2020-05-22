@@ -18,7 +18,7 @@ export class MonitorComponent implements OnInit {
   }
 
   async getAsyncData() {
-    this.monitorService.getServers().subscribe((response) => {
+    this.monitorService.getServers("ZZZ").subscribe((response) => {
       response.items.forEach((element) => {
         this.servers.push(element);
       });

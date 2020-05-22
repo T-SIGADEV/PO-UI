@@ -1,0 +1,38 @@
+<po-list-view [p-items]="items" p-title="Título">
+  <ng-template p-list-view-detail-template let-item let-code="index">
+    <div class="po-row">
+      <po-info class="po-md-3" p-label="Code" [p-value]="item.code"></po-info>
+      <po-info class="po-md-3" p-label="Email" [p-value]="item.email"></po-info>
+      <po-info class="po-md-3" p-label="Teste" [p-value]="item.email"></po-info>
+    </div>
+    <po-list-view p-property-title="name" [p-items]="items2">
+      <ng-template p-list-view-detail-template let-items2 let-code="index">
+        <div class="po-row">
+          <po-info
+            class="po-md-3"
+            p-label="Code"
+            [p-value]="items2.code"
+          ></po-info>
+          <po-info
+            class="po-md-3"
+            p-label="Email"
+            [p-value]="items2.email"
+          ></po-info>
+          <po-info
+            class="po-md-3"
+            p-label="Teste"
+            [p-value]="items2.email"
+          ></po-info>
+        </div>
+        <po-list-view p-property-title="name" [p-items]="items3">
+          <ng-template p-list-view-detail-template let-items3 let-code="index">
+            <div class="po-row">
+              <po-table [p-columns]="getColumns()" [p-items]="items3">
+              </po-table>
+            </div>
+          </ng-template>
+        </po-list-view>
+      </ng-template>
+    </po-list-view>
+  </ng-template>
+</po-list-view>

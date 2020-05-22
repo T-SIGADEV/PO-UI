@@ -19,12 +19,15 @@ export class ServerDetailsComponent implements OnInit {
   }
 
   async getAsyncData() {
-    this.monitorService.getServers().subscribe((response) => {
+    this.monitorService.getServers("ZZZ").subscribe((response) => {
       response.items.forEach((element) => {
         this.servers.push(element);
       });
       this.showTable = true;
       this.showLoading = false;
     });
+  }
+  public returnColor(memory: string): string {
+    return "red";
   }
 }

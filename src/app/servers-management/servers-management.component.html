@@ -1,0 +1,45 @@
+<div *ngIf="showLoading">
+  Carregando os dados...
+</div>
+<div *ngIf="showTable">
+  <po-button p-label="Novo Servidor" (p-click)="modal.open()"> </po-button>
+  <po-table
+    [p-columns]="getColumns()"
+    [p-items]="servers"
+    p-sort="true"
+    [p-striped]="true"
+  ></po-table>
+</div>
+
+<po-modal #modal p-title="Novo Servidor">
+  <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+    <po-input
+      name="input"
+      p-label="Endereço IP"
+      formControlName="ip"
+      p-name="ip"
+      id="ip"
+      p-placeholder="Endereço IP do Servidor"
+    >
+    </po-input>
+    <po-input name="input" formControlName="porta" p-label="Porta"> </po-input>
+
+    <po-input name="input" formControlName="environment" p-label="Ambiente">
+    </po-input>
+
+    <po-input name="input" p-label="Observação" formControlName="obs">
+    </po-input>
+
+    <po-select
+      name="select"
+      p-label="Lista Usuários"
+      [p-options]="[
+        { label: 'Sim', value: 'T' },
+        { label: 'Não', value: 'F' }
+      ]"
+      formControlName="listUsers"
+    >
+    </po-select>
+    <po-button (p-click)="onSubmit()" p-label="Salvar"> </po-button>
+  </form>
+</po-modal>
