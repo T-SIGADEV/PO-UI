@@ -1,9 +1,12 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { MonitorService } from "../services/servers.service";
-import { PoTableColumn } from "@portinari/portinari-ui";
+import {
+  PoTableColumn,
+  PoNotificationService,
+  PoModalComponent,
+} from "@portinari/portinari-ui";
 import { IdsServers } from "../interfaces/servers";
 import { FormGroup, Validators, FormBuilder } from "@angular/forms";
-import { Router } from "@angular/router";
 
 @Component({
   selector: "app-servers-management",
@@ -13,21 +16,99 @@ import { Router } from "@angular/router";
 export class ServersManagementComponent implements OnInit {
   public formulario: FormGroup;
   public servers = new Array<any>();
+  public serversIds = new Array();
   public showTable = false;
   public showLoading = true;
-  public serversIds = new Array();
+  public message = "";
+
+  @ViewChild(PoModalComponent, { static: true }) poModal: PoModalComponent;
+
   constructor(
     private monitorService: MonitorService,
     private formBuilder: FormBuilder,
-    private rotas: Router
+    private poNotification: PoNotificationService
   ) {}
 
   ngOnInit() {
     this.getAsyncData();
+    this.createForm();
+  }
 
+  async getAsyncData() {
+    this.servers = [];
+
+    this.monitorService.listServers("ZZZ").subscribe((response) => {
+      response.items.forEach((element) => {
+        this.servers.push(element);
+      });
+    });
+    this.changeValues();
+  }
+
+  onSubmit() {
+    if (this.validForm()) {
+      this.monitorService.createServers(this.formulario.value).subscribe();
+      this.showMessage("Servidor cadastrado com sucesso", 1);
+      this.formulario.reset();
+    }
+    this.refresh();
+  }
+
+  showMessage(message: string, type: number) {
+    if (type === 1) {
+      this.poNotification.success(message);
+    } else {
+      this.poNotification.error(message);
+    }
+  }
+
+  validForm(): boolean {
+    var isFormValid = true;
+    if (this.formulario.controls.ip.value == null) {
+      this.showMessage("Campo 'IP' é obrigatório", 2);
+      isFormValid = false;
+    } else if (this.formulario.controls.port.value == null) {
+      this.showMessage("Campo 'Porta' é obrigatório", 2);
+      isFormValid = false;
+    } else if (this.formulario.controls.environment.value == null) {
+      this.showMessage("Campo 'Ambiente' é obrigatório", 2);
+      isFormValid = false;
+    }
+
+    return isFormValid;
+  }
+
+  changeValues() {
+    this.showTable = true;
+    this.showLoading = !this.showTable;
+  }
+
+  public getItems() {
+    return this.servers;
+  }
+
+  public delete(row: any): void {
+    this.serversIds.push(row.id);
+
+    const payload: IdsServers = { idsServers: this.serversIds };
+
+    this.monitorService.deleteServer(payload).subscribe((response) => {
+      if (response.retorno == "Sucesso") {
+        this.showMessage("Servidor excluído com sucesso", 1);
+      }
+    });
+
+    this.refresh();
+  }
+
+  async refresh(): Promise<void> {
+    await this.getAsyncData();
+  }
+
+  createForm() {
     this.formulario = this.formBuilder.group({
       ip: [null, [Validators.required, Validators.min(3), Validators.max(50)]],
-      porta: [
+      port: [
         null,
         [Validators.required, Validators.min(3), Validators.max(10)],
       ],
@@ -40,18 +121,6 @@ export class ServersManagementComponent implements OnInit {
     });
   }
 
-  async getAsyncData() {
-    this.monitorService.listServers("ZZZ").subscribe((response) => {
-      response.items.forEach((element) => {
-        this.servers.push(element);
-      });
-      this.showTable = true;
-      this.showLoading = !this.showTable;
-    });
-  }
-  onSubmit() {
-    this.monitorService.createServers(this.formulario.value).subscribe();
-  }
   public getColumns(): Array<PoTableColumn> {
     return [
       {
@@ -88,18 +157,5 @@ export class ServersManagementComponent implements OnInit {
         ],
       },
     ];
-  }
-  public getItems() {
-    return this.servers;
-  }
-  public delete(row: any): void {
-    this.serversIds.push(row.id);
-
-    const payload: IdsServers = { idsServers: this.serversIds };
-
-    this.monitorService.deleteServer(payload).subscribe((response) => {});
-  }
-  refresh(): void {
-    this.rotas.navigate(["/management"]);
   }
 }
