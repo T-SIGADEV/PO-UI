@@ -14,9 +14,9 @@
     4 - Rodando via protheus.
         Dentro do seu projeto, execute o comando ng build --prod
         Será gerado em portinari\Monitor\dist uma pasta com o nome Monitor.
-        Faça o zip dessa pasta utilizando. Apenas extensão ZIP.
-        Renomei o arquivo, removendo a extenção ZIP para APP.
-        Joguei no seu diretório e compile o arquivo em seu RPO.
+        Faça o zip dessa pasta utilizando a extensão ZIP.
+        Renomei o arquivo, trocando a extenção ZIP para APP.
+        Jogue no seu diretório e compile o arquivo .app em seu RPO.
         Crie um menu com uma user function com o nome Monitor.
         Verifique o parâmetro MV_GCTPURL, ele deve conter o endereço do seu HTTP.
         https://tdn.totvs.com/display/public/PROT/FwCallApp+-+Abrindo+aplicativos+Web+no+Protheus
