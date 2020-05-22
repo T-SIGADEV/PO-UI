@@ -9,7 +9,6 @@ import { MonitorComponent } from "./monitor/monitor.component";
 import { ServerDetailsComponent } from "./server-details/server-details.component";
 import { MonitorService } from "./services/servers.service";
 import { ServersManagementComponent } from "./servers-management/servers-management.component";
-import { ListViewComponent } from "./list-view/list-view.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
@@ -18,7 +17,6 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
     MonitorComponent,
     ServerDetailsComponent,
     ServersManagementComponent,
-    ListViewComponent,
   ],
   imports: [
     BrowserModule,
