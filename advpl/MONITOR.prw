@@ -23,11 +23,15 @@ WSRESTFUL WSMONITOR DESCRIPTION "Monitor de Servidores" //FORMAT APPLICATION_JSO
         WSSYNTAX "/api/monitor/v1/listservers";
         PATH "/api/monitor/v1/listservers"
 
-    WSMETHOD POST CREATENEWSERVER         DESCRIPTION "Cria um servidor novo" ;
+    WSMETHOD GET LISTINI           DESCRIPTION "Retorna todos os servidores cadastrados." ;
+        WSSYNTAX "/api/monitor/v1/listini";
+        PATH "/api/monitor/v1/listini"
+
+    WSMETHOD POST CREATENEWSERVER  DESCRIPTION "Cria um servidor novo" ;
         WSSYNTAX "/api/monitor/v1/createnewserver";
         PATH "/api/monitor/v1/createnewserver"
 
-    WSMETHOD POST DELETESERVER         DESCRIPTION "Deleta um servidor";
+    WSMETHOD POST DELETESERVER     DESCRIPTION "Deleta um servidor";
         WSSYNTAX "/api/monitor/v1/deleteserver";
         PATH "/api/monitor/v1/deleteserver"
 
@@ -37,7 +41,7 @@ END WSRESTFUL
 /*/{Protheus.doc} Metodo GET
 Retorna todos os servidores cadastrados.
 
-@author JosÃ© Mauro Dourado Lopes
+@author Josï¿½ Mauro Dourado Lopes
 @since 18/04/2020
 @version 1.0
 /*/
@@ -79,7 +83,7 @@ while (cQuery)->(!Eof())
     aServers[nPos]['users']         := Alltrim((cQuery)->USERS)
     aServers[nPos]['delete']        := "delete"
 
-    oSrv := RPCCONNECT( Alltrim((cQuery)->IP), VAL((cQuery)->PORT), Alltrim((cQuery)->ENVIRONMENT), '99', '01' )
+    oSrv := RPCCONNECT( Alltrim((cQuery)->IP), VAL((cQuery)->PORT), Alltrim((cQuery)->ENVIRONMENT), 'T1', 'D MG 01' )
     if valtype(oSrv) == "O"
         If Alltrim((cQuery)->USERS) == 'T'
             oSrv:CALLPROC("RPCSetType", 3)
@@ -115,7 +119,7 @@ enddo
 
 RpcClearEnv()
 RpcSetType(3)
-RpcSetEnv( '99', '01' )
+RpcSetEnv( 'T1', 'D MG 01' )
 If Empty(__cUSerID)
     cUserName  := 'Administrador'
     __cUSerID  := '000000'
@@ -186,99 +190,58 @@ oServers['items'] := aServers
 
 Return .T.
 
-User Function RETMEMORY()
-    Local cInfo     as character
-    Local aInfo     as array
-    Local nMemory   as numeric
+WSMETHOD POST DELETESERVER WSREST WSMONITOR
 
-    cInfo := GETSRVMEMINFO()
-    aInfo := StrTokArr( cInfo, "   " )
-    nMemory := NOROUND((VAL(aInfo[7])/VAL(aInfo[4]))*100,2)
-Return nMemory
+Local cBody         as character
+Local nX            as numeric
+Local nSize         as numeric
+Local oJson         as object
 
-User Function RETPROC()
-    Local aInfoComp as array
-    Local nProcessa as numeric
+cBody           := ''
+oJson           := JsonObject():New()
+cBody           := self:GetContent()
 
-    aInfoComp := GetSrvInfo()
-    nProcessa := aInfoComp[5]
+oJson:fromJSON( cBody )
 
-Return nProcessa
+DBSelectArea("ZZZ")
+ZZZ->(DBSetOrder( 1 ))
+nSize := len(oJson["idsServers"])
 
-/*/{Protheus.doc} RETSERVERS
-    (long_description)
-    @type  Function
-    @author JosÃ© Mauro Dourado Lopes
-    @since 18/04/2020
-    @version version
-    @param 
-    @return Retorna a query dos servidores cadastrados.
-/*/
-User Function RETSERVERS(cTabela)
+For nX := 1 to nSize
+    If ZZZ->(DBSeek(xFilial("ZZZ") + oJson["idsServers"][nX]))
+        RecLock("ZZZ", .F.)
+        DBDelete()
+        ZZZ->(MsUnlock())
+    EndIf
+Next nX
 
-    Local cAlias    as character
-    Local cSelect   as character
-    Local cFrom     as character
-    Local cWhere    as character
+ZZZ->( DbCloseArea() )
 
-    cFrom  := RetSqlName( cTabela )
-    cAlias := GetNextAlias()
+oNotifications := JsonObject():New()
+oNotifications['retorno'] := "Sucesso"
 
-    cSelect := cTabela+"_ID     AS ID,          "
-    cSelect += cTabela+"_IP     AS IP,          "
-    cSelect += cTabela+"_PORTA  AS PORT,        "
-    cSelect += cTabela+"_AMBIEN AS ENVIRONMENT, "
-    cSelect += cTabela+"_OBS    AS OBS,         "
-    cSelect += cTabela+"_USERS  AS USERS        "
-
-    cWhere  := " D_E_L_E_T_ = ' ' "
-
-    cSelect	:= "%" + cSelect  + "%"
-    cFrom  	:= "%" + cFrom    + "%"
-    cWhere 	:= "%" + cWhere   + "%"
-
-    BeginSql Alias cAlias
-    	SELECT %Exp:cSelect% FROM %Exp:cFrom%  WHERE %EXP:cWhere%
-    EndSql
-
-Return cAlias
-
-    WSMETHOD POST DELETESERVER WSREST WSMONITOR
-
-    Local cBody         as character
-    Local nX            as numeric
-    Local nSize         as numeric
-    Local oJson         as object
-
-    cBody           := ''
-    oJson           := JsonObject():New()
-    cBody           := self:GetContent()
-
-    oJson:fromJSON( cBody )
-
-    DBSelectArea("ZZZ")
-    ZZZ->(DBSetOrder( 1 ))
-    nSize := len(oJson["idsServers"])
-
-    For nX := 1 to nSize
-        If ZZZ->(DBSeek(xFilial("ZZZ") + oJson["idsServers"][nX]))
-            RecLock("ZZZ", .F.)
-            DBDelete()
-            ZZZ->(MsUnlock())
-        EndIf
-    Next nX
-
-    ZZZ->( DbCloseArea() )
-
-    oNotifications := JsonObject():New()
-    oNotifications['retorno'] := "Sucesso"
-
-    ::SetContentType("application/json")
-    ::SetStatus(200)
-    ::SetResponse(oNotifications:toJSON())
+::SetContentType("application/json")
+::SetStatus(200)
+::SetResponse(oNotifications:toJSON())
 
 Return .T.
 
+WSMETHOD GET LISTINI WSREST WSMONITOR
+
+Local aIniSession := Nil
+Local nI := 0
+Local aLen := 0
+
+aIniSession := GetIniSessions("TOTVSAPPSERVER.INI")
+aLen = Len(aIniSession)
+conout(" Total Sessions: " + cValToChar(aLen))
+
+If aLen > 0
+    For nI := 1 to aLen
+        conout(aIniSession[nI])
+    Next nI
+EndIf
+Return
 //-------------------------------------------------------------------------------------------------------------
 /*/{Protheus.doc} Metodo POST
 @params
@@ -287,62 +250,63 @@ Return .T.
 @version 1.0
 /*/
 //---------------------------------------------------------------------------------------------------------------
-    WSMETHOD POST CREATENEWSERVER  WSREST WSMONITOR
+WSMETHOD POST CREATENEWSERVER  WSREST WSMONITOR
 
-    Local cBody         as character
-    Local nPos          as numeric
-    Local nX            as numeric
-    Local oServers      as object
-    Local oJson         as object
-    Local aServers      as array
-    Local aRetCampos    as array
+Local cBody         as character
+Local nPos          as numeric
+Local oServers      as object
+Local oJson         as object
+Local aServers      as array
+Local aRetCampos    as array
 
-    cBody       := ''
-    oJson       := JsonObject():New()
-    cBody       := self:GetContent()
-    aRetCampos  := {}
-    aServers    := {}
+cBody       := ''
+oJson       := JsonObject():New()
+cBody       := self:GetContent()
+aRetCampos  := {}
+aServers    := {}
 
-    oJson:fromJSON( cBody )
+oJson:fromJSON( cBody )
 
-    if(oJson["ip"]=="")
-        AADD(aRetCampos,"Campo IP obrigatï¿½rio.")
-    EndIf
+cMessage := U_JSONVALID( oJson )
 
-    if(oJson["porta"]=="")
-        AADD(aRetCampos,"Campo porta obrigatï¿½rio.")
-    EndIf
+Aadd(aServers,JsonObject():new())
+nPos := Len(aServers)
 
-    if(oJson["environment"]=="")
-        AADD(aRetCampos,"Campo ambiente obrigatï¿½rio.")
-    EndIf
+If !Empty(cMessage)
+    aServers[nPos]['mensagem']    := cMessage
+else
+    Aadd(aServers,JsonObject():new())
+    IF U_WSSERVER(oJson["ip"],oJson["port"],oJson["environment"],oJson["listUsers"],oJson["obs"])
+        aServers[nPos]['mensagem']    := "Servidor criado com sucesso."
+    EndIF
+Endif
 
-    if(oJson["listUsers"]=="")
-        AADD(aRetCampos,"Campo se deseja listar usuï¿½rios conectados obrigatï¿½rio.")
-    EndIf
+oServers := JsonObject():New()
+oServers['items'] := aServers
 
-    If Len(aRetCampos) > 0
-        For nX := 1 to len(aRetCampos)
-            Aadd(aServers,JsonObject():new())
-            nPos := Len(aServers)
-            aServers[nPos]['mensagem']    := ENCODEUTF8(aRetCampos[nX])
-        Next nX
-    else
-        Aadd(aServers,JsonObject():new())
-        IF U_WSSERVER(oJson["ip"],oJson["porta"],oJson["environment"],oJson["listUsers"],oJson["obs"])
-            aServers[1]['mensagem']    := "Servidor criado com sucesso."
-        EndIF
-    Endif
-
-    oServers := JsonObject():New()
-    oServers['items'] := aServers
-
-    ::SetContentType("application/json")
-    ::SetStatus(200)
-    ::SetResponse(oServers:toJSON())
+::SetContentType("application/json")
+::SetStatus(200)
+::SetResponse(oServers:toJSON())
 
 Return .T.
-
+/*/{Protheus.doc} User Function WSSERVER
+    (long_description)
+    @type  Function
+    @author user
+    @since 22/05/2020
+    @version version
+    @param 
+        cIp     -> IP do Servidor a ser cadastrado.
+        cPorta  -> Porta do Servidor a ser cadastrado.
+        cEnviro -> Ambiente do Servidor a ser cadastrado.
+        cUsers  -> Booleano para saber se lista ou não os usuários conectados no servidor.
+        cObs    -> Observação do servidor a ser cadastrado.
+    @return 
+        lRet -> Retorna lRet se o cadastro foi realizado com sucesso ou não.
+    @example
+    (examples)
+    @see (links_or_references)
+    /*/
 User Function WSSERVER(cIp,cPorta,cEnviro,cUsers,cObs)
 
     Local lRet 		 as logical
@@ -372,3 +336,116 @@ User Function WSSERVER(cIp,cPorta,cEnviro,cUsers,cObs)
     EndIf
 
 Return lRet
+
+/*/{Protheus.doc} User Function RETMEMORY
+    @type  Function
+    @author user
+    @since 22/05/2020
+    @version version
+    @param 
+    @return 
+        nMemory -> Retorna o percentual de memória utilizado.
+    @example
+    (examples)
+    @see (links_or_references)
+    /*/
+User Function RETMEMORY()
+    Local cInfo     as character
+    Local aInfo     as array
+    Local nMemory   as numeric
+
+    cInfo := GETSRVMEMINFO()
+    aInfo := StrTokArr( cInfo, "   " )
+    nMemory := NOROUND((VAL(aInfo[7])/VAL(aInfo[4]))*100,2)
+Return nMemory
+
+/*/{Protheus.doc} User Function RETPROC
+    @type  Function
+    @author user
+    @since 22/05/2020
+    @version version
+    @param 
+    @return 
+        nProcessa -> Retorna o número de processadores da máquina.
+    @example
+    (examples)
+    @see (links_or_references)
+    /*/
+User Function RETPROC()
+    Local aInfoComp as array
+    Local nProcessa as numeric
+
+    aInfoComp := GetSrvInfo()
+    nProcessa := aInfoComp[5]
+
+Return nProcessa
+
+/*/{Protheus.doc} User Function RETSERVERS
+    @type  Function
+    @author user
+    @since 22/05/2020
+    @version version
+    @param 
+    @return 
+        cAlias -> Retorna o alias dos servidores cadastrados.
+    @example
+    (examples)
+    @see (links_or_references)
+    /*/
+User Function RETSERVERS(cTabela)
+
+    Local cAlias    as character
+    Local cSelect   as character
+    Local cFrom     as character
+    Local cWhere    as character
+
+    cFrom  := RetSqlName( cTabela )
+    cAlias := GetNextAlias()
+
+    cSelect := cTabela+"_ID     AS ID,          "
+    cSelect += cTabela+"_IP     AS IP,          "
+    cSelect += cTabela+"_PORTA  AS PORT,        "
+    cSelect += cTabela+"_AMBIEN AS ENVIRONMENT, "
+    cSelect += cTabela+"_OBS    AS OBS,         "
+    cSelect += cTabela+"_USERS  AS USERS        "
+
+    cWhere  := " D_E_L_E_T_ = ' ' "
+
+    cSelect	:= "%" + cSelect  + "%"
+    cFrom  	:= "%" + cFrom    + "%"
+    cWhere 	:= "%" + cWhere   + "%"
+
+    BeginSql Alias cAlias
+    	SELECT %Exp:cSelect% FROM %Exp:cFrom%  WHERE %EXP:cWhere%
+    EndSql
+
+Return cAlias
+
+
+/*/{Protheus.doc} User Function nomeFunction
+    (long_description)
+    @type  Function
+    @author user
+    @since 22/05/2020
+    @version version
+    @param 
+        oJson -> Recebe o objeto recido na requisição.
+    @return 
+        cMessage -> Retorna uma mensagem informando que algum campo obrigatório não foi informado.
+    @example
+    (examples)
+    @see (links_or_references)
+    /*/
+User Function JSONVALID( oJson )
+    Local cMessage	:= ""
+
+    If Empty( oJson["ip"] ) .or. oJson["ip"] == nil
+        cMessage := ENCODEUTF8("Campo IP é obrigatório")
+    ElseIf Empty( oJson["port"] ) .or. oJson["port"] == nil
+        cMessage := ENCODEUTF8("Campo porta é obrigatório")
+    ElseIf Empty( oJson["environment"] ) .or. oJson["environment"] == nil
+        cMessage := ENCODEUTF8("Campo ambiente obrigatório")
+    ElseIf Empty(  oJson["listUsers"] ) .or.  oJson["listUsers"] == nil
+        cMessage := ENCODEUTF8("Campo lista usuário é obrigatório")
+    EndIf
+Return cMessage

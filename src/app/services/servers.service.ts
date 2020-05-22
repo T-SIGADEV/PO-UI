@@ -13,7 +13,7 @@ export class MonitorService {
   public getServers(tabela: string): Observable<any> {
     return this.http.get(`${this.API}/${"allservers?tabela="}${tabela}`);
   }
-  public deleteServer(payload: IdsServers) {
+  public deleteServer(payload: IdsServers): any {
     return this.http.post(`${this.API}/${"deleteserver"}`, payload);
   }
   public listServers(tabela: string): Observable<any> {

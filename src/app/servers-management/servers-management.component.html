@@ -22,12 +22,28 @@
       p-placeholder="Endereço IP do Servidor"
     >
     </po-input>
-    <po-input name="input" formControlName="porta" p-label="Porta"> </po-input>
-
-    <po-input name="input" formControlName="environment" p-label="Ambiente">
+    <po-input
+      name="input"
+      formControlName="port"
+      p-label="Porta"
+      p-placeholder="Porta do AppServer"
+    >
     </po-input>
 
-    <po-input name="input" p-label="Observação" formControlName="obs">
+    <po-input
+      name="input"
+      formControlName="environment"
+      p-label="Ambiente"
+      p-placeholder="Ambiente a ser monitorado"
+    >
+    </po-input>
+
+    <po-input
+      name="input"
+      p-label="Observação"
+      formControlName="obs"
+      p-placeholder="Observação do servidor"
+    >
     </po-input>
 
     <po-select
