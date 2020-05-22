@@ -19,7 +19,7 @@ WSRESTFUL WSMONITOR DESCRIPTION "Monitor de Servidores" //FORMAT APPLICATION_JSO
         WSSYNTAX "/api/monitor/v1/allservers";
         PATH "/api/monitor/v1/allservers"
 
-    WSMETHOD GET LISTSERVERS       DESCRIPTION "Lista os servidores para manutenção." ;
+    WSMETHOD GET LISTSERVERS       DESCRIPTION "Lista os servidores para manutenï¿½ï¿½o." ;
         WSSYNTAX "/api/monitor/v1/listservers";
         PATH "/api/monitor/v1/listservers"
 
@@ -37,7 +37,7 @@ END WSRESTFUL
 /*/{Protheus.doc} Metodo GET
 Retorna todos os servidores cadastrados.
 
-@author José Mauro Dourado Lopes
+@author JosÃ© Mauro Dourado Lopes
 @since 18/04/2020
 @version 1.0
 /*/
@@ -134,7 +134,7 @@ Return .T.
 /*/{Protheus.doc} Metodo GET
 Retorna todos os servidores cadastrados.
 
-@author José Mauro Dourado Lopes
+@author Josï¿½ Mauro Dourado Lopes
 @since 18/04/2020
 @version 1.0
 /*/
@@ -208,7 +208,7 @@ Return nProcessa
 /*/{Protheus.doc} RETSERVERS
     (long_description)
     @type  Function
-    @author José Mauro Dourado Lopes
+    @author JosÃ© Mauro Dourado Lopes
     @since 18/04/2020
     @version version
     @param 
@@ -282,7 +282,7 @@ Return .T.
 //-------------------------------------------------------------------------------------------------------------
 /*/{Protheus.doc} Metodo POST
 @params
-@author José Mauro Dourado Lopes
+@author Josï¿½ Mauro Dourado Lopes
 @since 01/04/2020
 @version 1.0
 /*/
@@ -306,19 +306,19 @@ Return .T.
     oJson:fromJSON( cBody )
 
     if(oJson["ip"]=="")
-        AADD(aRetCampos,"Campo IP obrigatório.")
+        AADD(aRetCampos,"Campo IP obrigatï¿½rio.")
     EndIf
 
     if(oJson["porta"]=="")
-        AADD(aRetCampos,"Campo porta obrigatório.")
+        AADD(aRetCampos,"Campo porta obrigatï¿½rio.")
     EndIf
 
     if(oJson["environment"]=="")
-        AADD(aRetCampos,"Campo ambiente obrigatório.")
+        AADD(aRetCampos,"Campo ambiente obrigatï¿½rio.")
     EndIf
 
     if(oJson["listUsers"]=="")
-        AADD(aRetCampos,"Campo se deseja listar usuários conectados obrigatório.")
+        AADD(aRetCampos,"Campo se deseja listar usuï¿½rios conectados obrigatï¿½rio.")
     EndIf
 
     If Len(aRetCampos) > 0
